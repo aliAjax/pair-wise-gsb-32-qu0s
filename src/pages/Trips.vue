@@ -15,6 +15,7 @@
   </main>
 </template>
 <script setup lang="ts">
+import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import TripCard from '../components/common/TripCard.vue';
 import EmptyState from '../components/common/EmptyState.vue';
@@ -23,6 +24,7 @@ import { TRIP_STATUS_OPTIONS } from '../constants/trip';
 import { messages } from '../constants/messages';
 const router = useRouter();
 const tripStore = useTripStore();
+onMounted(() => tripStore.syncTripStatus());
 function create() { router.push('/trip/' + tripStore.createTrip()); }
 function open(id: string) { router.push('/trip/' + id); }
 </script>

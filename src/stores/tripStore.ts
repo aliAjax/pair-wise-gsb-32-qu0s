@@ -34,6 +34,24 @@ export const useTripStore = defineStore('trip', {
       tripApi.save(this.trips);
       toast.ok(messages.tripDeleted);
     },
+    syncTripStatus() {
+      const today = new Date().toISOString().slice(0, 10);
+      let changed = false;
+      this.trips.forEach((trip) => {
+        if (trip.status === TripStatus.PLANNING && trip.start_date <= today) {
+          trip.status = TripStatus.ONGOING;
+          changed = true;
+        }
+      });
+      if (changed) tripApi.save(this.trips);
+    },
+    finishTrip(id: string) {
+      const trip = this.trips.find((item) => item.id === id);
+      if (!trip) return;
+      trip.status = TripStatus.FINISHED;
+      tripApi.save(this.trips);
+      toast.ok(messages.tripFinished);
+    },
   },
 });
 

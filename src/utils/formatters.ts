@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { SpotCategory } from '../constants/spot';
 import { TripStatus } from '../constants/trip';
+import { ExecutionItemStatus, SKIP_REASON_OPTIONS } from '../constants/execution';
 
 export const spotCategoryText: Record<SpotCategory, string> = {
   [SpotCategory.NATURE]: '自然风光',
@@ -14,6 +15,12 @@ export const tripStatusText: Record<TripStatus, string> = {
   [TripStatus.FINISHED]: '已结束',
 };
 export const transportText: Record<string, string> = { walk: '步行', metro: '地铁', taxi: '出租', train: '火车' };
+export const executionStatusText: Record<ExecutionItemStatus, string> = {
+  [ExecutionItemStatus.PENDING]: '待执行',
+  [ExecutionItemStatus.DONE]: '已完成',
+  [ExecutionItemStatus.SKIPPED]: '已跳过',
+};
+export const skipReasonText = (value: string) => SKIP_REASON_OPTIONS.find((item) => item.value === value)?.label || value;
 export const formatDate = (value: string) => dayjs(value).format('YYYY-MM-DD');
 export const formatCurrency = (value: number, currency = 'CNY') => new Intl.NumberFormat('zh-CN', { style: 'currency', currency }).format(value);
 
