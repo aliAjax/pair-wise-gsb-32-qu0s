@@ -4,6 +4,7 @@ import type { Trip } from '../models/trip';
 import { tripApi } from '../api/tripApi';
 import { messages } from '../constants/messages';
 import { toast } from '../utils/message';
+import { useExecutionStore } from './executionStore';
 
 export const useTripStore = defineStore('trip', {
   state: () => ({ trips: tripApi.list() as Trip[], statusFilter: 'all' as TripStatus | 'all' }),
@@ -29,11 +30,27 @@ export const useTripStore = defineStore('trip', {
       toast.ok(messages.tripCreated);
       return trip.id;
     },
+    // 状态推进只改 Trip 状态本身；执行记录由 executionStore 单独留存
+    markOngoing(id: string) {
+      const trip = this.trips.find((item) => item.id === id);
+      if (trip && trip.status !== TripStatus.ONGOING) {
+        trip.status = TripStatus.ONGOING;
+        tripApi.save(this.trips);
+      }
+    },
+    markFinished(id: string) {
+      const trip = this.trips.find((item) => item.id === id);
+      if (trip && trip.status !== TripStatus.FINISHED) {
+        trip.status = TripStatus.FINISHED;
+        tripApi.save(this.trips);
+      }
+    },
     removeTrip(id: string) {
       this.trips = this.trips.filter((trip) => trip.id !== id);
       tripApi.save(this.trips);
+      // 连带清理执行记录（状态与执行记录分开留存）
+      useExecutionStore().removeByTrip(id);
       toast.ok(messages.tripDeleted);
     },
   },
 });
-

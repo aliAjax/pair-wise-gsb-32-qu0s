@@ -3,6 +3,7 @@ import type { DayPlan, DayPlanItem } from '../models/dayPlan';
 import { dayPlanApi } from '../api/dayPlanApi';
 import { messages } from '../constants/messages';
 import { toast } from '../utils/message';
+import { useExecutionStore } from './executionStore';
 
 export const useDayPlanStore = defineStore('dayPlan', {
   state: () => ({ dayPlans: dayPlanApi.list() as DayPlan[] }),
@@ -20,6 +21,8 @@ export const useDayPlanStore = defineStore('dayPlan', {
       const item: DayPlanItem = { spot_id: spotId, start_time: '10:00', end_time: '12:00', note: '现场调整', transport: 'metro' };
       day.items.push(item);
       dayPlanApi.save(this.dayPlans);
+      // 旅行已出发时，执行记录同步追加新项，但保持原快照顺序不变
+      useExecutionStore().syncNewItem(tripId, dayIndex, item.spot_id, item.start_time, item.end_time, item.note, item.transport);
       toast.ok(messages.spotAdded);
     },
     reorder(tripId: string, dayIndex: number, from: number, to: number) {
@@ -30,4 +33,3 @@ export const useDayPlanStore = defineStore('dayPlan', {
     },
   },
 });
-

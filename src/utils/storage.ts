@@ -6,9 +6,10 @@ class TripWeaverDb extends Dexie {
   trips!: Table<unknown, string>;
   spots!: Table<unknown, string>;
   dayPlans!: Table<unknown, string>;
+  executions!: Table<unknown, string>;
   constructor() {
     super('tripweaver');
-    this.version(1).stores({ trips: 'id,status,destination', spots: 'id,category', dayPlans: 'id,trip_id,day_index' });
+    this.version(1).stores({ trips: 'id,status,destination', spots: 'id,category', dayPlans: 'id,trip_id,day_index', executions: 'trip_id' });
   }
 }
 
@@ -29,4 +30,3 @@ export function loadLocal<T>(key: string, fallback: T): T {
 export function saveLocal<T>(key: string, data: T) {
   localStorage.setItem(key, JSON.stringify({ version: STORAGE_VERSION, data, updatedAt: new Date().toISOString() }));
 }
-
